@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../coeur/languages/gestion_langage.dart';
 import '../../../authentification/views/ecran_connexion.dart';
+import '../ecran_creer_annonce.dart';
 import '../../../vendeur/guard_vendeur.dart';
 
 enum RoleUtilisateur { visiteur, acheteur, vendeur, livreur }
@@ -141,9 +142,7 @@ class _MenuFlottantState extends State<MenuFlottant>
           icon: Icons.add_business,
           label: Langage.t(context, 'nouvelle_annonce'),
           cs: cs,
-          onTap: () {
-            // TODO : écran création annonce
-          },
+          onTap: () => _allerCreerAnnonce(context),
         ),
       ],
     );
@@ -197,6 +196,15 @@ class _MenuFlottantState extends State<MenuFlottant>
       context,
       MaterialPageRoute(
         builder: (_) => const GuardVendeur(),
+      ),
+    );
+  }
+
+  void _allerCreerAnnonce(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const EcranCreerAnnonce(),
       ),
     );
   }

@@ -6,6 +6,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/boutique.dart';
 import '../services/service_vendeur_supabase.dart';
@@ -150,6 +151,44 @@ class _EcranListeBoutiquesState extends State<EcranListeBoutiques> {
   }
 
   // ===============================================
+  // 📤 PARTAGER UNE BOUTIQUE
+  // ===============================================
+  Future<void> _partagerBoutique(Boutique boutique) async {
+    final localisation =
+        '${boutique.ville}${boutique.quartier != null && boutique.quartier!.isNotEmpty ? ', ${boutique.quartier}' : ''}';
+    final mapsUrl =
+        'https://www.google.com/maps/search/?api=1&query=${boutique.latitude},${boutique.longitude}';
+
+    final message = StringBuffer()
+      ..writeln('🛍️ Découvrez ma boutique sur SAME Shop !')
+      ..writeln()
+      ..writeln('Nom: ${boutique.nomBoutique}')
+      ..writeln('Localisation: $localisation')
+      ..writeln('Abonnement: ${boutique.typeAbonnementLabel}')
+      ..writeln()
+      ..writeln('Voir sur la carte: $mapsUrl');
+
+    try {
+      await SharePlus.instance.share(
+        ShareParams(
+          title: 'Boutique SAME Shop',
+          text: message.toString(),
+          subject: 'Découvrez ${boutique.nomBoutique}',
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de partager la boutique: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  // ===============================================
   // ⚙️ AFFICHER MENU OPTIONS
   // ===============================================
   void _afficherMenuOptions(Boutique boutique) {
@@ -226,14 +265,9 @@ class _EcranListeBoutiquesState extends State<EcranListeBoutiques> {
               ListTile(
                 leading: const Icon(Icons.share),
                 title: const Text('Partager'),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context);
-                  // TODO: Implémenter le partage
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Fonctionnalité bientôt disponible'),
-                    ),
-                  );
+                  await _partagerBoutique(boutique);
                 },
               ),
 

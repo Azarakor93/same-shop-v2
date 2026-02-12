@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
-import '../favoris/ecran_favoris.dart';
 import '../home/views/page_accueil.dart';
+import '../livraisons/ecran_livraisons.dart';
 import '../messagerie/ecran_messages.dart';
+import '../profil/ecran_profil.dart';
 import '../vendeur/views/page_ma_boutique.dart';
-import '../encheres/ecran_encheres.dart';
 import '../home/views/widgets/menu_flottant.dart';
 import '../../coeur/languages/gestion_langage.dart';
 
@@ -23,28 +23,28 @@ class _EcranPrincipalState extends State<EcranPrincipal> {
   /// 📄 Pages principales — 5 onglets (PDF SAME Shop)
   final List<Widget> _pages = [
     const PageAccueil(),
-    const EcranFavoris(),
-    const EcranMessages(),
     const PageMaBoutique(),
-    const EcranEncheres(),
+    const EcranLivraisons(),
+    const EcranMessages(),
+    const EcranProfil(),
   ];
 
   /// 🔤 Labels navigation
   final List<String> _labels = const [
-    'Accueil',
-    'Favoris',
-    'Messages',
-    'Ma Boutique',
-    'Enchères',
+    'Marketplace',
+    'Boutiques',
+    'Livreurs',
+    'Messagerie',
+    'Profil',
   ];
 
   /// 🎯 Icônes navigation
   final List<IconData> _icones = [
-    Icons.home_outlined,
-    Icons.favorite_border,
-    Icons.chat_bubble_outline,
+    Icons.storefront_outlined,
     Icons.store_outlined,
-    Icons.gavel,
+    Icons.local_shipping_outlined,
+    Icons.chat_bubble_outline,
+    Icons.person_outline,
   ];
 
   @override
@@ -133,7 +133,7 @@ class _EcranPrincipalState extends State<EcranPrincipal> {
       ),
 
       // ================= FAB =================
-      floatingActionButton: (_indexActuel == 2 || _indexActuel == 4)
+      floatingActionButton: (_indexActuel >= 2)
           ? null
           : const MenuFlottant(),
     );

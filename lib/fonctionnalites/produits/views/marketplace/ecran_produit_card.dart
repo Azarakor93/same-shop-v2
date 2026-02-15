@@ -80,10 +80,11 @@ class ProduitGridCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // 🖼️ IMAGE (55%)
-            Expanded(
-              flex: 55,
+            // 🖼️ IMAGE - Hauteur flexible
+            AspectRatio(
+              aspectRatio: 1.0,
               child: Stack(
                 children: [
                   FutureBuilder<String?>(
@@ -190,98 +191,96 @@ class ProduitGridCard extends StatelessWidget {
               ),
             ),
 
-            // 📝 INFO PRODUIT (45%)
-            Expanded(
-              flex: 45,
-              child: Padding(
-                padding: const EdgeInsets.all(6),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    // 💰 PRIX
-                    Text(
-                      produit.prixFormate,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
-                        fontSize: 14,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+            // 📝 INFO PRODUIT - Hauteur flexible
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 💰 PRIX
+                  Text(
+                    produit.prixFormate,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                      fontSize: 15,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
 
-                    const SizedBox(height: 3),
+                  const SizedBox(height: 5),
 
-                    // 📛 NOM PRODUIT
-                    Text(
-                      produit.nom,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
-                        height: 1.1,
-                      ),
+                  // 📛 NOM PRODUIT
+                  Text(
+                    produit.nom,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                      height: 1.3,
                     ),
+                  ),
 
-                    const SizedBox(height: 3),
+                  const SizedBox(height: 6),
 
-                    // ⭐ NOTE + 👁️ VUES
-                    Row(
-                      children: [
-                        // Note
-                        Icon(Icons.star, color: Colors.amber.withValues(alpha: 0.8), size: 12),
-                        const SizedBox(width: 2),
-                        Text(
-                          produit.note.toStringAsFixed(1),
-                          style: textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 10,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        // Vues
-                        Icon(Icons.visibility, size: 12, color: Colors.grey.withValues(alpha: 0.6)),
-                        const SizedBox(width: 2),
-                        Text(
-                          '${produit.nombreVues}',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: Colors.grey.withValues(alpha: 0.7),
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Spacer(),
-
-                    // 🕐 DURÉE (ligne séparée en bas à droite)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        _dureeDepuisMiseEnLigne(),
+                  // ⭐ NOTE + 👁️ VUES
+                  Row(
+                    children: [
+                      // Note
+                      Icon(Icons.star, color: Colors.amber.withValues(alpha: 0.8), size: 13),
+                      const SizedBox(width: 3),
+                      Text(
+                        produit.note.toStringAsFixed(1),
                         style: textTheme.bodySmall?.copyWith(
-                          color: Colors.grey.withValues(alpha: 0.6),
-                          fontSize: 9,
-                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 11,
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      // Vues
+                      Icon(Icons.visibility, size: 13, color: Colors.grey.withValues(alpha: 0.6)),
+                      const SizedBox(width: 3),
+                      Text(
+                        '${produit.nombreVues}',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Colors.grey.withValues(alpha: 0.7),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // 🕐 DURÉE (ligne séparée en bas à droite)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      _dureeDepuisMiseEnLigne(),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: Colors.grey.withValues(alpha: 0.6),
+                        fontSize: 10,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
+                  ),
 
-                    const SizedBox(height: 3),
+                  const SizedBox(height: 6),
 
-                    // 📍 DIVIDER
-                    Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Colors.grey.withValues(alpha: 0.2),
-                    ),
+                  // 📍 DIVIDER
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Colors.grey.withValues(alpha: 0.2),
+                  ),
 
-                    const SizedBox(height: 4),
+                  const SizedBox(height: 8),
 
-                    // 🏪 BOUTIQUE (en bas)
-                    FutureBuilder<Boutique?>(
+                  // 🏪 BOUTIQUE (en bas)
+                  FutureBuilder<Boutique?>(
                       future: _getBoutique(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -392,8 +391,7 @@ class ProduitGridCard extends StatelessWidget {
                         );
                       },
                     ),
-                  ],
-                ),
+                ],
               ),
             ),
           ],

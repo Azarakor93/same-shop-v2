@@ -127,5 +127,32 @@ class ServiceFournisseursSupabase {
       'prix_propose': prixPropose,
     });
   }
+
+  // ✅ NOUVELLE MÉTHODE pour Tab Fournisseurs
+  Future<List<DemandeFournisseur>> recupererDemandesActives() async {
+    try {
+      final maintenant = DateTime.now().toIso8601String();
+
+      final response = await _client
+          .from('demandes_fournisseurs')
+          .select('''
+            *,
+            profiles!inner(nom_complet)
+          ''')
+          .eq('active', true)
+          .gt('expire_at', maintenant)
+          .order('created_at', ascending: false);
+
+      return (response as List).map((json) {
+        return DemandeFournisseur.fromMap({
+          ...json,
+          'nom_demandeur': json['profiles']['nom_complet'] ?? 'Utilisateur',
+        });
+      }).toList();
+    } catch (e) {
+      print('❌ Erreur récupération demandes: $e');
+      return [];
+    }
+  }
 }
 

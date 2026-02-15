@@ -121,7 +121,7 @@ class _TousProduitsTabState extends State<TousProduitsTab> {
               padding: EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisExtent: 280, // Hauteur fixe pour chaque carte
+                mainAxisExtent: 300, // Hauteur augmentée pour éviter overflow
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
               ),

@@ -215,12 +215,11 @@ class ProduitGridCard extends StatelessWidget {
                   // 📛 NOM PRODUIT
                   Text(
                     produit.nom,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
-                      height: 1.3,
                     ),
                   ),
 

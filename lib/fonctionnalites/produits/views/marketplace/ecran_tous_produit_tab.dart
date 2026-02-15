@@ -121,7 +121,7 @@ class _TousProduitsTabState extends State<TousProduitsTab> {
               padding: EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.78,
+                childAspectRatio: 0.68, // Ratio ajusté pour plus de hauteur
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
               ),

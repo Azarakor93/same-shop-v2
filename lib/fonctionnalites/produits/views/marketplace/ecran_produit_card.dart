@@ -193,227 +193,207 @@ class ProduitGridCard extends StatelessWidget {
             // 📝 INFO PRODUIT (45%)
             Expanded(
               flex: 45,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Partie infos produit
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    // 💰 PRIX
+                    Text(
+                      produit.prixFormate,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // 📛 NOM PRODUIT
+                    Text(
+                      produit.nom,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                        height: 1.2,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // ⭐ NOTE + 👁️ VUES
+                    Row(
                       children: [
-                        // 💰 PRIX
+                        // Note
+                        Icon(Icons.star, color: Colors.amber.withValues(alpha: 0.8), size: 12),
+                        const SizedBox(width: 2),
                         Text(
-                          produit.prixFormate,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                            fontSize: 15,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-
-                        const SizedBox(height: 4),
-
-                        // 📛 NOM PRODUIT
-                        Text(
-                          produit.nom,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.bodyMedium?.copyWith(
+                          produit.note.toStringAsFixed(1),
+                          style: textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w500,
-                            fontSize: 13,
-                            height: 1.3,
+                            fontSize: 10,
                           ),
                         ),
-
-                        const SizedBox(height: 6),
-
-                        // ⭐ NOTE + 👁️ VUES + 🕐 DURÉE
-                        Row(
-                          children: [
-                            // Note
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.star, color: Colors.amber.withValues(alpha: 0.8), size: 13),
-                                const SizedBox(width: 3),
-                                Text(
-                                  produit.note.toStringAsFixed(1),
-                                  style: textTheme.bodySmall?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 8),
-                            // Vues
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.visibility, size: 13, color: Colors.grey.withValues(alpha: 0.6)),
-                                const SizedBox(width: 3),
-                                Text(
-                                  '${produit.nombreVues}',
-                                  style: textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey.withValues(alpha: 0.7),
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            // Durée (à droite)
-                            Text(
-                              _dureeDepuisMiseEnLigne(),
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.grey.withValues(alpha: 0.7),
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
+                        const SizedBox(width: 6),
+                        // Vues
+                        Icon(Icons.visibility, size: 12, color: Colors.grey.withValues(alpha: 0.6)),
+                        const SizedBox(width: 2),
+                        Text(
+                          '${produit.nombreVues}',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: Colors.grey.withValues(alpha: 0.7),
+                            fontSize: 10,
+                          ),
                         ),
                       ],
                     ),
-                  ),
 
-                  const Spacer(),
+                    const Spacer(),
 
-                  // 📍 DIVIDER + BOUTIQUE (en bas)
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: Colors.grey.withValues(alpha: 0.2),
+                    // 🕐 DURÉE (ligne séparée en bas à droite)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        _dureeDepuisMiseEnLigne(),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Colors.grey.withValues(alpha: 0.6),
+                          fontSize: 9,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
-                      FutureBuilder<Boutique?>(
-                        future: _getBoutique(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.withValues(alpha: 0.2),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Container(
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.withValues(alpha: 0.2),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
+                    ),
 
-                          final boutique = snapshot.data;
-                          if (boutique == null) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      color: primaryColor.withValues(alpha: 0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.store,
-                                      size: 12,
-                                      color: primaryColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      'Boutique',
-                                      style: textTheme.bodySmall?.copyWith(
-                                        fontSize: 11,
-                                        color: Colors.grey.withValues(alpha: 0.8),
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
+                    const SizedBox(height: 4),
 
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                            child: Row(
-                              children: [
-                                // 🏪 LOGO BOUTIQUE (rond)
-                                Container(
-                                  width: 20,
-                                  height: 20,
+                    // 📍 DIVIDER
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Colors.grey.withValues(alpha: 0.2),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    // 🏪 BOUTIQUE (en bas)
+                    FutureBuilder<Boutique?>(
+                      future: _getBoutique(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Row(
+                            children: [
+                              Container(
+                                width: 18,
+                                height: 18,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withValues(alpha: 0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Container(
+                                  height: 8,
                                   decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: primaryColor.withValues(alpha: 0.1),
-                                    border: Border.all(
-                                      color: primaryColor.withValues(alpha: 0.3),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: ClipOval(
-                                    child: boutique.logoUrl != null
-                                        ? CachedNetworkImage(
-                                            imageUrl: boutique.logoUrl!,
-                                            fit: BoxFit.cover,
-                                            errorWidget: (context, url, error) => Icon(
-                                              Icons.store,
-                                              size: 12,
-                                              color: primaryColor,
-                                            ),
-                                          )
-                                        : Icon(
-                                            Icons.store,
-                                            size: 12,
-                                            color: primaryColor,
-                                          ),
+                                    color: Colors.grey.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
-                                const SizedBox(width: 6),
-                                // 📛 NOM BOUTIQUE
-                                Expanded(
-                                  child: Text(
-                                    boutique.nomBoutique,
-                                    style: textTheme.bodySmall?.copyWith(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey.withValues(alpha: 0.8),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                        }
+
+                        final boutique = snapshot.data;
+                        if (boutique == null) {
+                          return Row(
+                            children: [
+                              Container(
+                                width: 18,
+                                height: 18,
+                                decoration: BoxDecoration(
+                                  color: primaryColor.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.store,
+                                  size: 10,
+                                  color: primaryColor,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Boutique',
+                                  style: textTheme.bodySmall?.copyWith(
+                                    fontSize: 10,
+                                    color: Colors.grey.withValues(alpha: 0.8),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                        return Row(
+                          children: [
+                            // 🏪 LOGO BOUTIQUE (rond)
+                            Container(
+                              width: 18,
+                              height: 18,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: primaryColor.withValues(alpha: 0.1),
+                                border: Border.all(
+                                  color: primaryColor.withValues(alpha: 0.3),
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: ClipOval(
+                                child: boutique.logoUrl != null
+                                    ? CachedNetworkImage(
+                                        imageUrl: boutique.logoUrl!,
+                                        fit: BoxFit.cover,
+                                        errorWidget: (context, url, error) => Icon(
+                                          Icons.store,
+                                          size: 10,
+                                          color: primaryColor,
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.store,
+                                        size: 10,
+                                        color: primaryColor,
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            // 📛 NOM BOUTIQUE
+                            Expanded(
+                              child: Text(
+                                boutique.nomBoutique,
+                                style: textTheme.bodySmall?.copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey.withValues(alpha: 0.8),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

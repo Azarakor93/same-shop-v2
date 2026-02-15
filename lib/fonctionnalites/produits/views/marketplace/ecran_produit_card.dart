@@ -198,38 +198,24 @@ class ProduitGridCard extends StatelessWidget {
                 children: [
                   // Partie infos produit
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // 💰 PRIX + 🕐 DURÉE
-                        Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                produit.prixFormate,
-                                style: textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: primaryColor,
-                                  fontSize: 14,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              _dureeDepuisMiseEnLigne(),
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.grey.withValues(alpha: 0.7),
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
+                        // 💰 PRIX
+                        Text(
+                          produit.prixFormate,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                            fontSize: 15,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
 
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
 
                         // 📛 NOM PRODUIT
                         Text(
@@ -241,6 +227,54 @@ class ProduitGridCard extends StatelessWidget {
                             fontSize: 13,
                             height: 1.3,
                           ),
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        // ⭐ NOTE + 👁️ VUES + 🕐 DURÉE
+                        Row(
+                          children: [
+                            // Note
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.star, color: Colors.amber.withValues(alpha: 0.8), size: 13),
+                                const SizedBox(width: 3),
+                                Text(
+                                  produit.note.toStringAsFixed(1),
+                                  style: textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 8),
+                            // Vues
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.visibility, size: 13, color: Colors.grey.withValues(alpha: 0.6)),
+                                const SizedBox(width: 3),
+                                Text(
+                                  '${produit.nombreVues}',
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey.withValues(alpha: 0.7),
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            // Durée (à droite)
+                            Text(
+                              _dureeDepuisMiseEnLigne(),
+                              style: textTheme.bodySmall?.copyWith(
+                                color: Colors.grey.withValues(alpha: 0.7),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

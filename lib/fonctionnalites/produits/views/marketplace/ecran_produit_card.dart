@@ -194,7 +194,7 @@ class ProduitGridCard extends StatelessWidget {
             Expanded(
               flex: 45,
               child: Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
@@ -211,7 +211,7 @@ class ProduitGridCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
 
                     // 📛 NOM PRODUIT
                     Text(
@@ -221,11 +221,11 @@ class ProduitGridCard extends StatelessWidget {
                       style: textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                         fontSize: 12,
-                        height: 1.2,
+                        height: 1.1,
                       ),
                     ),
 
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
 
                     // ⭐ NOTE + 👁️ VUES
                     Row(
@@ -269,7 +269,7 @@ class ProduitGridCard extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
 
                     // 📍 DIVIDER
                     Divider(
@@ -278,7 +278,7 @@ class ProduitGridCard extends StatelessWidget {
                       color: Colors.grey.withValues(alpha: 0.2),
                     ),
 
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
 
                     // 🏪 BOUTIQUE (en bas)
                     FutureBuilder<Boutique?>(

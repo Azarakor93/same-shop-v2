@@ -165,12 +165,31 @@ String getIconeEmoji(String iconeCode) {
 }
 
 // ===============================================
+// 🎨 UTILS - TAILLES PRODUITS
+// ===============================================
+class TaillesOption {
+  final String tailles;
+  const TaillesOption({
+    required this.tailles,
+  });
+}
+
+final List<TaillesOption> taillesProduits = [
+  TaillesOption(tailles: 'XS'),
+  TaillesOption(tailles: 'S'),
+  TaillesOption(tailles: 'M'),
+  TaillesOption(tailles: 'L'),
+  TaillesOption(tailles: 'XL'),
+  TaillesOption(tailles: 'XXL'),
+  TaillesOption(tailles: 'XXXL'),
+];
+
+// ===============================================
 // 🎨 UTILS - COULEURS PRODUITS
 // ===============================================
 class CouleurOption {
   final String nom;
   final Color couleur;
-
   const CouleurOption({
     required this.nom,
     required this.couleur,

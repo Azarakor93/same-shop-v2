@@ -3,9 +3,8 @@
 // ===============================================
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/favori.dart';
-import '../services/service_favoris_supabase.dart';
-import '../../produits/views/ecran_details_produit.dart';
+import 'models/favori_temp.dart';
+import 'services/service_favoris_supabase.dart';
 
 class TabFavoris extends StatefulWidget {
   const TabFavoris({super.key});
@@ -135,11 +134,11 @@ class _TabFavorisState extends State<TabFavoris> {
         }
       });
     } else {
-      // Ouvrir détails produit
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EcranDetailsProduit(produitId: favori.produitId),
+      // TODO: Ouvrir détails produit (nécessite charger produit complet)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Produit: ${favori.nomProduit}'),
+          backgroundColor: Theme.of(context).primaryColor,
         ),
       );
     }
@@ -356,9 +355,7 @@ class _CarteFavori extends StatelessWidget {
             if (modeSelection)
               Positioned.fill(
                 child: Container(
-                  color: estSelectionne
-                      ? theme.primaryColor.withValues(alpha: 0.3)
-                      : Colors.transparent,
+                  color: estSelectionne ? theme.primaryColor.withValues(alpha: 0.3) : Colors.transparent,
                   child: estSelectionne
                       ? Align(
                           alignment: Alignment.topRight,

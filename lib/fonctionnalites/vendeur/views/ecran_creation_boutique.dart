@@ -150,15 +150,11 @@ class _EcranCreationBoutiqueState extends State<EcranCreationBoutique> {
 
       await _serviceVendeur.creerBoutique(
         nomBoutique: _nomController.text.trim(),
-        description: _descriptionController.text.trim().isEmpty
-            ? null
-            : _descriptionController.text.trim(),
+        description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
         telephone: _telephoneController.text.trim(),
         pays: _paysSelectionne!.nom,
         ville: _villeController.text.trim(),
-        quartier: _quartierController.text.trim().isEmpty
-            ? null
-            : _quartierController.text.trim(),
+        quartier: _quartierController.text.trim().isEmpty ? null : _quartierController.text.trim(),
         logoUrl: logoUrl,
         latitude: _position!.latitude,
         longitude: _position!.longitude,
@@ -197,9 +193,7 @@ class _EcranCreationBoutiqueState extends State<EcranCreationBoutique> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.estPremiere
-            ? 'Créer ma première boutique'
-            : 'Créer une boutique'),
+        title: Text(widget.estPremiere ? 'Créer ma première boutique' : 'Créer une boutique'),
         centerTitle: true,
         elevation: 0,
       ),
@@ -305,9 +299,7 @@ class _EcranCreationBoutiqueState extends State<EcranCreationBoutique> {
                 controller: _nomController,
                 label: 'Nom de la boutique',
                 icon: Icons.store,
-                validator: (v) => v == null || v.trim().length < 3
-                    ? 'Minimum 3 caractères'
-                    : null,
+                validator: (v) => v == null || v.trim().length < 3 ? 'Minimum 3 caractères' : null,
               ),
 
               const SizedBox(height: 16),
@@ -332,8 +324,7 @@ class _EcranCreationBoutiqueState extends State<EcranCreationBoutique> {
                 controller: _villeController,
                 label: 'Ville',
                 icon: Icons.location_city,
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Ville obligatoire' : null,
+                validator: (v) => v == null || v.isEmpty ? 'Ville obligatoire' : null,
               ),
 
               const SizedBox(height: 16),
@@ -358,14 +349,10 @@ class _EcranCreationBoutiqueState extends State<EcranCreationBoutique> {
                         ),
                       )
                     : Icon(
-                        _position != null
-                            ? Icons.check_circle
-                            : Icons.my_location,
+                        _position != null ? Icons.check_circle : Icons.my_location,
                       ),
                 label: Text(
-                  _position != null
-                      ? 'Localisation activée'
-                      : 'Activer la localisation',
+                  _position != null ? 'Localisation activée' : 'Activer la localisation',
                 ),
               ),
 
@@ -373,9 +360,7 @@ class _EcranCreationBoutiqueState extends State<EcranCreationBoutique> {
 
               ElevatedButton(
                 onPressed: _chargement ? null : _creerBoutique,
-                child: _chargement
-                    ? const CircularProgressIndicator()
-                    : const Text('🚀 Créer ma boutique'),
+                child: _chargement ? const CircularProgressIndicator() : const Text('🚀 Créer ma boutique'),
               ),
             ],
           ),
@@ -474,9 +459,7 @@ class _EcranCreationBoutiqueState extends State<EcranCreationBoutique> {
           ? []
           : [
               LengthLimitingTextInputFormatter(
-                _paysSelectionne!.code.length +
-                    1 +
-                    _paysSelectionne!.longueurNumero,
+                _paysSelectionne!.code.length + 1 + _paysSelectionne!.longueurNumero,
               ),
             ],
       validator: (v) {
@@ -484,9 +467,7 @@ class _EcranCreationBoutiqueState extends State<EcranCreationBoutique> {
           return 'Sélectionnez un pays';
         }
         final numero = v!.replaceAll(_paysSelectionne!.code, '').trim();
-        return numero.length == _paysSelectionne!.longueurNumero
-            ? null
-            : 'Numéro invalide';
+        return numero.length == _paysSelectionne!.longueurNumero ? null : 'Numéro invalide';
       },
       decoration: const InputDecoration(
         labelText: 'Téléphone',

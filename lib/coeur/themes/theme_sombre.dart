@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class ThemeSombre {
   // 🎨 PALETTE DE COULEURS GLACIALE
   static const Color tealPrimary = Color(0xFF00BFA5);
-  static const Color tealDark = Color(0xFF008E76);
+  static const Color tealDark = Color(0xFF003D33); // ← NOIR pour texte
   static const Color tealLight = Color(0xFF64FFDA);
   static const Color amberAccent = Color(0xFFFFB300);
 
@@ -26,7 +26,7 @@ class ThemeSombre {
       scaffoldBackgroundColor: background, // ← Background glacial sombre
 
       colorScheme: const ColorScheme.dark(
-        primary: tealPrimary,
+        primary: Color.fromARGB(255, 0, 225, 195),
         onPrimary: Color(0xFF003D33),
         primaryContainer: Color(0xFF005E4D),
         onPrimaryContainer: tealLight,
@@ -221,8 +221,7 @@ class ThemeSombre {
       // ❄️ CARDS GLACIALES - LE PLUS IMPORTANT !
       cardTheme: CardThemeData(
         elevation: 4, // ← Ombre forte
-        shadowColor:
-            Colors.black.withValues(alpha: 0.4), // ← Ombre glaciale sombre
+        shadowColor: Colors.black.withValues(alpha: 0.4), // ← Ombre glaciale sombre
         color: surface, // ← Gris-bleu foncé
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(

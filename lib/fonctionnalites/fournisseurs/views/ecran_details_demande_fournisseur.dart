@@ -100,27 +100,40 @@ class _EcranDetailsDemandeFournisseurState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    d.produitRecherche,
+                    d.titre,
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
+                  // LISTE DES PRODUITS
+                  ...d.produits.map((p) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.shopping_bag, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${p['nom']} - Qté: ${p['quantite']} - ${p['budget_unitaire']} FCFA/unité',
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [
                       _chip('Expire: ${joursRestants}j'),
-                      if (d.quantite != null) _chip('Qté: ${d.quantite}'),
-                      if (d.budget != null) _chip('Budget: ${d.budget} FCFA'),
-                      if (d.ville != null && d.ville!.isNotEmpty)
+                      _chip('Budget total: ${d.budgetTotal.toStringAsFixed(0)} FCFA'),
+                      if (d.ville.isNotEmpty)
                         _chip('Ville: ${d.ville}'),
-                      if (d.pays != null && d.pays!.isNotEmpty)
+                      if (d.pays.isNotEmpty)
                         _chip('Pays: ${d.pays}'),
-                      if (d.livraisonVille != null &&
-                          d.livraisonVille!.isNotEmpty)
-                        _chip('Livraison: ${d.livraisonVille}'),
                     ],
                   ),
                   if (d.details != null && d.details!.trim().isNotEmpty) ...[

@@ -112,6 +112,7 @@ final Map<String, String> en = {
   //Espace vendeur
   ///==========================================================================
   'create_shop': 'Create my shop',
+  'nouvelle_annonce': 'Create ad',
   'shop_title': 'Launch your shop on SAME SHOP',
   'shop_subtitle': 'Create your shop for free and start selling today.',
   'shop_name': 'Shop name',

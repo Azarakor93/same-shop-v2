@@ -2,7 +2,6 @@
 // 📊 DASHBOARD VENDEUR MODERNE - 4 TABS
 // ===============================================
 import 'package:flutter/material.dart';
-import '../models/boutique.dart';
 import 'tabs/tab_apercu_boutique.dart';
 import 'tabs/tab_produits_boutique.dart';
 import 'tabs/tab_commandes_boutique.dart';
@@ -20,8 +19,7 @@ class DashboardVendeurModerne extends StatefulWidget {
   State<DashboardVendeurModerne> createState() => _DashboardVendeurModerneState();
 }
 
-class _DashboardVendeurModerneState extends State<DashboardVendeurModerne>
-    with SingleTickerProviderStateMixin {
+class _DashboardVendeurModerneState extends State<DashboardVendeurModerne> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -46,15 +44,13 @@ class _DashboardVendeurModerneState extends State<DashboardVendeurModerne>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.boutique.nom,
+              widget.boutique.nomBoutique,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              widget.boutique.typeBoutique == 'entreprise'
-                  ? '🏢 Entreprise'
-                  : '👤 Particulier',
+              widget.boutique.typeAbonnement == TypeAbonnement.entreprise ? '🏢 Entreprise' : '👤 Particulier',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.primaryColor,
               ),

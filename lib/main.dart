@@ -8,7 +8,7 @@ import 'coeur/themes/theme_sombre.dart';
 import 'coeur/services/preferences_service.dart';
 import 'coeur/services/supabase_preferences_service.dart';
 import 'coeur/configuration/supabase_config.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'partage/widgets/auth_router.dart';
 
 Future<void> main() async {
@@ -25,9 +25,11 @@ Future<void> main() async {
   final initialThemeMode = await PreferencesService.chargerTheme();
 
   runApp(
-    SameShopApp(
-      initialLocale: initialLocale,
-      initialThemeMode: initialThemeMode,
+    ProviderScope(
+      child: SameShopApp(
+        initialLocale: initialLocale,
+        initialThemeMode: initialThemeMode,
+      ),
     ),
   );
 }
@@ -50,8 +52,7 @@ class _SameShopAppState extends State<SameShopApp> {
   late Locale _locale;
   late ThemeMode _themeMode;
 
-  final SupabasePreferencesService _supabasePrefs =
-      SupabasePreferencesService();
+  final SupabasePreferencesService _supabasePrefs = SupabasePreferencesService();
 
   @override
   void initState() {

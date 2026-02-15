@@ -62,7 +62,7 @@ class _EcranAjouterProduitState extends State<EcranAjouterProduit> {
   // VARIANTS
   bool _hasVariants = false;
   final List<VarianteTemp> _variantesTemp = [];
-  List<String> taillesDisponibles = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+  // List<String> taillesDisponibles = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
   @override
   void initState() {
@@ -566,10 +566,11 @@ class _EcranAjouterProduitState extends State<EcranAjouterProduit> {
                     ),
                     child: Row(
                       children: [
+                        // ✅ NOUVEAU CODE (100% fonctionnel)
                         Expanded(
                           flex: 2,
                           child: DropdownButtonFormField<String>(
-                            initialValue: _variantesTemp[index].taille.isEmpty ? null : _variantesTemp[index].taille,
+                            initialValue: _getTaillesSelectionnee(index)?.tailles, // ✅ .tailles extrait
                             decoration: const InputDecoration(
                               labelText: 'Taille',
                               labelStyle: TextStyle(fontSize: 11),
@@ -577,16 +578,21 @@ class _EcranAjouterProduitState extends State<EcranAjouterProduit> {
                               border: OutlineInputBorder(),
                             ),
                             isDense: true,
-                            items: taillesDisponibles
-                                .map((t) => DropdownMenuItem(
-                                      value: t,
-                                      child: Text(t, style: const TextStyle(fontSize: 12)),
+                            items: taillesProduits
+                                .map((t) => DropdownMenuItem<String>(
+                                      // ✅ String explicite
+                                      value: t.tailles, // ✅ Chaîne extraite
+                                      child: Text(t.tailles, style: const TextStyle(fontSize: 12)),
                                     ))
                                 .toList(),
-                            onChanged: (v) => _updateVariante(index, 'taille', v),
+                            onChanged: (v) => _updateVariante(index, 'taille', v), // ✅ v est String
                           ),
                         ),
+
+                        ///
                         const SizedBox(width: 4),
+
+                        ///
                         Expanded(
                           flex: 2,
                           child: DropdownButtonFormField<CouleurOption>(
@@ -944,6 +950,15 @@ class _EcranAjouterProduitState extends State<EcranAjouterProduit> {
     if (_variantesTemp[index].couleur.isEmpty) return null;
     try {
       return couleursProduits.firstWhere((c) => c.nom == _variantesTemp[index].couleur);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  TaillesOption? _getTaillesSelectionnee(int index) {
+    if (_variantesTemp[index].taille.isEmpty) return null;
+    try {
+      return taillesProduits.firstWhere((c) => c.tailles == _variantesTemp[index].taille);
     } catch (e) {
       return null;
     }

@@ -6,6 +6,9 @@ import '../../models/boutique.dart';
 import '../ecran_modifier_boutique.dart';
 import '../../../fournisseurs/views/ecran_creer_demande_fournisseur.dart';
 
+// Import nécessaire pour TypeAbonnement
+export '../../models/boutique.dart';
+
 class TabApercuBoutique extends StatelessWidget {
   final Boutique boutique;
 
@@ -113,7 +116,7 @@ class TabApercuBoutique extends StatelessWidget {
               theme,
               icon: Icons.location_on,
               label: 'Localisation',
-              valeur: '${boutique.ville ?? ''}, ${boutique.pays ?? ''}',
+              valeur: '${boutique.ville}, ${boutique.pays}',
             ),
             const SizedBox(height: 12),
 
@@ -122,10 +125,10 @@ class TabApercuBoutique extends StatelessWidget {
               theme,
               icon: Icons.business,
               label: 'Type',
-              valeur: boutique.typeBoutique == 'entreprise'
+              valeur: boutique.typeAbonnement == TypeAbonnement.entreprise
                   ? 'Entreprise (30 000 FCFA/mois)'
-                  : boutique.typeBoutique == 'payant'
-                      ? 'Payant (5 000 FCFA/mois)'
+                  : boutique.typeAbonnement == TypeAbonnement.premium
+                      ? 'Premium (5 000 FCFA/mois)'
                       : 'Gratuit',
             ),
             const SizedBox(height: 12),
@@ -135,7 +138,7 @@ class TabApercuBoutique extends StatelessWidget {
               theme,
               icon: Icons.verified,
               label: 'Statut',
-              valeur: boutique.active ? 'Active ✅' : 'Inactive ❌',
+              valeur: boutique.estActif ? 'Active ✅' : 'Suspendue ❌',
             ),
           ],
         ),
@@ -374,7 +377,7 @@ class TabApercuBoutique extends StatelessWidget {
           titre: 'Créer une enchère',
           sousTitre: 'Organisez une vente aux enchères (Entreprise)',
           onTap: () {
-            if (boutique.typeBoutique != 'entreprise') {
+            if (boutique.typeAbonnement != TypeAbonnement.entreprise) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('❌ Réservé aux comptes Entreprise'),

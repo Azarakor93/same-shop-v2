@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import '../models/demande_fournisseur.dart';
 import '../services/service_fournisseurs_supabase.dart';
-import 'ecran_creer_demande_fournisseur.dart';
 import 'ecran_details_demande_fournisseur.dart';
 
 class TabFournisseurs extends StatefulWidget {

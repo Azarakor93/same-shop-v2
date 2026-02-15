@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/favori.dart';
+import '../models/favori_temp.dart';
 
 class ServiceFavorisSupabase {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -10,15 +10,11 @@ class ServiceFavorisSupabase {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) return [];
 
-      final response = await _supabase
-          .from('favoris')
-          .select('''
+      final response = await _supabase.from('favoris').select('''
             *,
             produits!inner(nom, prix, images, boutique_id),
             boutiques(nom)
-          ''')
-          .eq('utilisateur_id', userId)
-          .order('date_ajout', ascending: false);
+          ''').eq('utilisateur_id', userId).order('date_ajout', ascending: false);
 
       return (response as List).map((json) {
         return Favori(
@@ -62,11 +58,7 @@ class ServiceFavorisSupabase {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) return false;
 
-      await _supabase
-          .from('favoris')
-          .delete()
-          .eq('utilisateur_id', userId)
-          .eq('produit_id', produitId);
+      await _supabase.from('favoris').delete().eq('utilisateur_id', userId).eq('produit_id', produitId);
 
       return true;
     } catch (e) {
@@ -81,12 +73,7 @@ class ServiceFavorisSupabase {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) return false;
 
-      final response = await _supabase
-          .from('favoris')
-          .select('id')
-          .eq('utilisateur_id', userId)
-          .eq('produit_id', produitId)
-          .maybeSingle();
+      final response = await _supabase.from('favoris').select('id').eq('utilisateur_id', userId).eq('produit_id', produitId).maybeSingle();
 
       return response != null;
     } catch (e) {
@@ -100,11 +87,7 @@ class ServiceFavorisSupabase {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) return Stream.value([]);
 
-    return _supabase
-        .from('favoris')
-        .stream(primaryKey: ['id'])
-        .eq('utilisateur_id', userId)
-        .map((data) {
+    return _supabase.from('favoris').stream(primaryKey: ['id']).eq('utilisateur_id', userId).map((data) {
           return data.map((json) => Favori.fromJson(json)).toList();
         });
   }

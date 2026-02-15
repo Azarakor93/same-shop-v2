@@ -2,8 +2,6 @@
 // 🎯 FILTRES STYLE FACEBOOK MARKETPLACE
 // ===============================================
 import 'package:flutter/material.dart';
-import '../../models/categorie.dart';
-import '../../services/service_categorie.dart';
 
 class FiltresFacebookStyle extends StatefulWidget {
   final Function(Map<String, dynamic> filtres) onFiltresApplies;
@@ -18,16 +16,14 @@ class FiltresFacebookStyle extends StatefulWidget {
 }
 
 class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
-  final ServiceCategorie _serviceCategorie = ServiceCategorie();
-
   // Filtres actifs
-  Categorie? _categorieSelectionnee;
+  String? _categorieSelectionnee;
   String? _localisationSelectionnee;
   RangeValues _prixRange = const RangeValues(0, 1000000);
   String? _etatSelectionne;
   String _triSelectionne = 'recent';
 
-  List<Categorie> _categories = [];
+  List<Map<String, dynamic>> _categories = [];
   bool _chargement = true;
 
   // Options de localisation (vous pouvez les charger depuis Supabase)
@@ -64,9 +60,16 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
 
   Future<void> _chargerCategories() async {
     setState(() => _chargement = true);
-    final categories = await _serviceCategorie.recupererCategoriesAvecStats();
+    // TODO: Charger vraies catégories depuis Supabase
+    // Pour l'instant, liste statique
     setState(() {
-      _categories = categories;
+      _categories = const [
+        {'id': '1', 'nom': 'Électronique', 'nombre_produits': 150},
+        {'id': '2', 'nom': 'Mode', 'nombre_produits': 200},
+        {'id': '3', 'nom': 'Maison', 'nombre_produits': 120},
+        {'id': '4', 'nom': 'Sports', 'nombre_produits': 80},
+        {'id': '5', 'nom': 'Beauté', 'nombre_produits': 90},
+      ];
       _chargement = false;
     });
   }
@@ -92,7 +95,7 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
 
   void _appliquerFiltres() {
     widget.onFiltresApplies({
-      'categorie': _categorieSelectionnee?.code,
+      'categorie': _categorieSelectionnee,
       'localisation': _localisationSelectionnee,
       'prix_min': _prixRange.start,
       'prix_max': _prixRange.end,
@@ -198,7 +201,7 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
           _buildChipFiltre(
             theme,
             icone: Icons.category_outlined,
-            label: _categorieSelectionnee?.nom ?? 'Catégorie',
+            label: _categorieSelectionnee ?? 'Catégorie',
             actif: _categorieSelectionnee != null,
             onTap: () => _scrollToSection(0),
           ),
@@ -222,9 +225,7 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
           _buildChipFiltre(
             theme,
             icone: Icons.verified_outlined,
-            label: _etatSelectionne != null
-                ? _etats.firstWhere((e) => e['id'] == _etatSelectionne)['nom']!
-                : 'État',
+            label: _etatSelectionne != null ? _etats.firstWhere((e) => e['id'] == _etatSelectionne)['nom']! : 'État',
             actif: _etatSelectionne != null,
             onTap: () => _scrollToSection(3),
           ),
@@ -249,9 +250,7 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
     required VoidCallback onTap,
   }) {
     return Material(
-      color: actif
-          ? theme.primaryColor
-          : theme.colorScheme.surfaceContainerHighest,
+      color: actif ? theme.primaryColor : theme.colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
@@ -301,25 +300,27 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
           spacing: 8,
           runSpacing: 8,
           children: _categories.map((categorie) {
-            final estSelectionne = _categorieSelectionnee?.code == categorie.code;
+            final categorieNom = categorie['nom'] as String;
+            final categorieId = categorie['id'] as String;
+            final estSelectionne = _categorieSelectionnee == categorieId;
 
             return ChoiceChip(
               label: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    _getIconeCategorie(categorie.icone),
+                    Icons.category,
                     size: 16,
                     color: estSelectionne ? Colors.white : theme.primaryColor,
                   ),
                   const SizedBox(width: 6),
-                  Text(categorie.nom),
+                  Text(categorieNom),
                 ],
               ),
               selected: estSelectionne,
               onSelected: (selected) {
                 setState(() {
-                  _categorieSelectionnee = selected ? categorie : null;
+                  _categorieSelectionnee = selected ? categorieId : null;
                 });
               },
               selectedColor: theme.primaryColor,
@@ -470,8 +471,6 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
         ),
         const SizedBox(height: 12),
         ..._tris.map((tri) {
-          final estSelectionne = _triSelectionne == tri['id'];
-
           return RadioListTile<String>(
             value: tri['id']!,
             groupValue: _triSelectionne,
@@ -514,9 +513,7 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: Text(
-              nombreActifs > 0
-                  ? 'Afficher les résultats ($nombreActifs filtres)'
-                  : 'Afficher tous les produits',
+              nombreActifs > 0 ? 'Afficher les résultats ($nombreActifs filtres)' : 'Afficher tous les produits',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -528,7 +525,7 @@ class _FiltresFacebookStyleState extends State<FiltresFacebookStyle> {
     );
   }
 
-  IconData _getIconeCategorie(String? nomIcone) {
+  IconData getIconeCategorie(String? nomIcone) {
     if (nomIcone == null) return Icons.category;
 
     final icones = {

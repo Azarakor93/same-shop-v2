@@ -137,15 +137,15 @@ class _ListeDemandes extends StatelessWidget {
               return Card(
                 child: ListTile(
                   title: Text(
-                    d.produitRecherche,
+                    d.titre,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
                     [
-                      if (d.quantite != null) 'Qté: ${d.quantite}',
-                      if (d.budget != null) 'Budget: ${d.budget} FCFA',
-                      if (d.ville != null && d.ville!.isNotEmpty) d.ville!,
+                      '${d.produits.length} produit${d.produits.length > 1 ? 's' : ''}',
+                      'Budget: ${d.budgetTotal.toStringAsFixed(0)} FCFA',
+                      if (d.ville.isNotEmpty) d.ville,
                       'Expire: ${joursRestants}j',
                     ].join(' • '),
                     maxLines: 2,

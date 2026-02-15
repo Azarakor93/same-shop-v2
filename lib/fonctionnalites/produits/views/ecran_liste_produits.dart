@@ -3,6 +3,7 @@
 // ===============================================
 // Bottom sheet avec aperçu visuel et adaptatif au thème
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../vendeur/models/boutique.dart';
 import '../../vendeur/views/ecran_abonnement_vendeur.dart';
@@ -507,7 +508,7 @@ class _EcranListeProduitsState extends State<EcranListeProduits> {
                               // BADGES
                               Wrap(
                                 spacing: 6,
-                                runSpacing: 6,
+                                runSpacing: 30,
                                 children: [
                                   _buildBadge(
                                     produit.estNeuf ? 'Neuf' : 'Occasion',
@@ -963,10 +964,11 @@ class _EcranListeProduitsState extends State<EcranListeProduits> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.network(
-                            snapshot.data!.first.url,
+                          CachedNetworkImage(
+                            imageUrl: snapshot.data!.first.url,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _buildPlaceholder(isDark),
+                            placeholder: (context, url) => _buildPlaceholder(isDark), // 👈 Loading
+                            errorWidget: (context, url, error) => _buildPlaceholder(isDark), // 👈 Erreur
                           ),
                           Positioned(
                             top: 6,
@@ -1001,118 +1003,136 @@ class _EcranListeProduitsState extends State<EcranListeProduits> {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+                padding: const EdgeInsets.all(4),
+                child: LayoutBuilder(
+                  // 👈 MESURE écran auto
+                  builder: (context, constraints) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min, // 👈 IMPORTANT
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            produit.nom,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 11,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => _afficherMenuOptions(produit),
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            child: Icon(
-                              Icons.more_vert,
-                              size: 16,
-                              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (produit.description != null && produit.description!.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        produit.description!,
-                        style: TextStyle(
-                          fontSize: 9,
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                          height: 1.2,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    const Spacer(),
-                    Text(
-                      produit.prixFormate,
-                      style: TextStyle(
-                        color: theme.colorScheme.primary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.inventory_2,
-                                size: 11,
-                                color: produit.estEnRupture ? Colors.red : Colors.green,
-                              ),
-                              const SizedBox(width: 3),
-                              Expanded(
-                                child: Text(
-                                  produit.estEnRupture ? 'Rupture' : '${produit.stockGlobal ?? 0}',
-                                  style: TextStyle(
-                                    fontSize: 9,
-                                    color: produit.estEnRupture ? Colors.red : Colors.grey.shade600,
+                        // 🏷️ NOM - 100% safe
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Align(
+                                // 👈 AJOUTEZ Align
+                                alignment: Alignment.centerLeft, // 👈 À GAUCHE
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    produit.nom,
+                                    textAlign: TextAlign.left, // 👈 + textAlign
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: constraints.maxWidth > 200 ? 14 : 13,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                            ),
+
+                            ///
+                            GestureDetector(
+                              onTap: () => _afficherMenuOptions(produit),
+                              child: Container(
+                                padding: const EdgeInsets.all(1),
+                                child: Icon(Icons.more_vert, size: 18),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        /// 📝 DESCRIPTION - Optionnelle + compacte
+                        if (produit.description?.isNotEmpty ?? false) ...[
+                          SizedBox(height: constraints.maxWidth > 250 ? 2 : 1),
+                          Flexible(
+                            child: Text(
+                              produit.description!,
+                              style: TextStyle(
+                                fontSize: constraints.maxWidth > 200 ? 9 : 8,
+                                height: 1.1,
+                              ),
+                              maxLines: 2, // 👈 2→1 = safe
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+
+                        /// 💰 PRIX - Toujours visible
+                        SizedBox(height: constraints.maxWidth > 250 ? 2 : 1),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            produit.prixFormate,
+                            style: TextStyle(
+                              color: theme.colorScheme.primary,
+                              fontSize: constraints.maxWidth > 200 ? 15 : 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                        // 📦 STOCK + SWITCH - Compact
+                        SizedBox(height: 1),
+                        IntrinsicHeight(
+                          // 👈 Hauteur parfaite
+                          child: Row(
+                            children: [
+                              // Stock
+                              Expanded(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.inventory_2, size: 15),
+                                    SizedBox(width: 2),
+                                    Flexible(
+                                      child: Text(
+                                        produit.estEnRupture ? 'Rupture' : '${produit.stockGlobal ?? 0}',
+                                        style: TextStyle(fontSize: 11),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Switch/Badge
+                              if (!estAbonnementGratuit)
+                                Transform.scale(
+                                  scale: 0.6,
+                                  child: Switch(
+                                    value: produit.actif,
+                                    onChanged: (_) => _toggleActif(produit),
+                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                )
+                              else
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                                  decoration: BoxDecoration(
+                                    color: produit.actif ? Colors.green.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    produit.actif ? 'ON' : 'OFF', // 👈 Plus court
+                                    style: TextStyle(fontSize: 7, fontWeight: FontWeight.w700),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
-                        if (!estAbonnementGratuit)
-                          Transform.scale(
-                            scale: 0.65,
-                            child: Switch(
-                              value: produit.actif,
-                              onChanged: (_) => _toggleActif(produit),
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                          )
-                        else
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: produit.actif ? Colors.green.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              produit.actif ? 'Actif' : 'Inactif',
-                              style: TextStyle(
-                                fontSize: 9,
-                                color: produit.actif ? Colors.green : Colors.grey.shade600,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
                       ],
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
             ),
+
+            ///
           ],
         ),
       ),

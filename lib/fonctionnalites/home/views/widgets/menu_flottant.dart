@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:same_shop/fonctionnalites/vendeur/views/ecran_creation_boutique.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../coeur/languages/gestion_langage.dart';
 import '../../../authentification/views/ecran_connexion.dart';
 import '../ecran_creer_annonce.dart';
-import '../../../vendeur/guard_vendeur.dart';
 
 enum RoleUtilisateur { visiteur, acheteur, vendeur, livreur }
 
@@ -15,15 +15,14 @@ class MenuFlottant extends StatefulWidget {
   State<MenuFlottant> createState() => _MenuFlottantState();
 }
 
-class _MenuFlottantState extends State<MenuFlottant>
-    with SingleTickerProviderStateMixin {
+class _MenuFlottantState extends State<MenuFlottant> with SingleTickerProviderStateMixin {
   bool _ouvert = false;
 
   late AnimationController _controller;
   late Animation<double> _fade;
   late Animation<Offset> _slide;
 
-  static const double _largeurBouton = 220;
+  static const double _largeurBouton = 180;
 
   @override
   void initState() {
@@ -77,21 +76,37 @@ class _MenuFlottantState extends State<MenuFlottant>
           ),
 
         /// ➕ / ✖️ BOUTON PRINCIPAL
-        FloatingActionButton(
-          backgroundColor: cs.primary,
-          onPressed: () {
-            setState(() => _ouvert = !_ouvert);
-            _ouvert ? _controller.forward() : _controller.reverse();
-          },
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Icon(
-              _ouvert ? Icons.close : Icons.add,
-              key: ValueKey(_ouvert),
-              color: cs.onPrimary,
+        Container(
+          //padding: EdgeInsets.only(top: 16),
+          margin: EdgeInsets.only(top: 16),
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: theme.brightness == Brightness.light ? Color(0xFF00BFA5) : Color.fromARGB(255, 118, 59, 0).withValues(alpha: 0.6),
+            shape: BoxShape.circle,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                setState(() => _ouvert = !_ouvert);
+                _ouvert ? _controller.forward() : _controller.reverse();
+              },
+              borderRadius: BorderRadius.circular(28),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Icon(
+                  _ouvert ? Icons.close : Icons.add,
+                  key: ValueKey(_ouvert),
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
             ),
           ),
         ),
+
+        ///
       ],
     );
   }
@@ -107,7 +122,6 @@ class _MenuFlottantState extends State<MenuFlottant>
     if (user == null) {
       return _menuVisiteur(context, cs);
     }
-
     return _menuAcheteur(context, cs);
   }
 
@@ -135,7 +149,7 @@ class _MenuFlottantState extends State<MenuFlottant>
           icon: Icons.storefront,
           label: Langage.t(context, 'create_shop'),
           cs: cs,
-          onTap: () => _allerGuardVendeur(context),
+          onTap: () => _allerCreerBoutiqueVendeur(context),
         ),
         const SizedBox(height: 8),
         _action(
@@ -191,11 +205,11 @@ class _MenuFlottantState extends State<MenuFlottant>
     );
   }
 
-  void _allerGuardVendeur(BuildContext context) {
+  void _allerCreerBoutiqueVendeur(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const GuardVendeur(),
+        builder: (_) => const EcranCreationBoutique(),
       ),
     );
   }

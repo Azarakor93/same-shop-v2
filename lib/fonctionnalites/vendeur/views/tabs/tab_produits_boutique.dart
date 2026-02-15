@@ -2,7 +2,6 @@
 // 📦 TAB PRODUITS BOUTIQUE
 // ===============================================
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../models/boutique.dart';
 import '../../../produits/models/produit.dart';
 import '../../../produits/services/service_produit_supabase.dart';
@@ -36,7 +35,7 @@ class _TabProduitsBoutiqueState extends State<TabProduitsBoutique> {
 
   Future<void> _chargerProduits() async {
     setState(() => _chargement = true);
-    final produits = await _service.recupererProduitsBoutique(widget.boutique.id);
+    final produits = await _service.listerProduitsVendeur(widget.boutique.id);
     setState(() {
       _produits = produits;
       _chargement = false;
@@ -116,9 +115,9 @@ class _TabProduitsBoutiqueState extends State<TabProduitsBoutique> {
   Widget _buildQuotaInfo(ThemeData theme) {
     // Limites selon type boutique
     int limite = 3; // Gratuit
-    if (widget.boutique.typeBoutique == 'payant') {
+    if (widget.boutique.typeAbonnement == TypeAbonnement.premium) {
       limite = 100; // Exemple
-    } else if (widget.boutique.typeBoutique == 'entreprise') {
+    } else if (widget.boutique.typeAbonnement == TypeAbonnement.entreprise) {
       limite = 9999; // Illimité
     }
 
@@ -213,7 +212,7 @@ class _TabProduitsBoutiqueState extends State<TabProduitsBoutique> {
       context,
       MaterialPageRoute(
         builder: (context) => EcranAjouterProduit(
-          boutiqueId: widget.boutique.id,
+          boutique: widget.boutique,
         ),
       ),
     );
@@ -227,7 +226,10 @@ class _TabProduitsBoutiqueState extends State<TabProduitsBoutique> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EcranDetailsProduit(produitId: produit.id),
+        builder: (context) => EcranDetailsProduit(
+          produit: produit,
+          boutique: widget.boutique,
+        ),
       ),
     );
   }
@@ -236,7 +238,10 @@ class _TabProduitsBoutiqueState extends State<TabProduitsBoutique> {
     final resultat = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EcranModifierProduit(produit: produit),
+        builder: (context) => EcranModifierProduit(
+          produit: produit,
+          boutique: widget.boutique,
+        ),
       ),
     );
 
@@ -269,11 +274,11 @@ class _TabProduitsBoutiqueState extends State<TabProduitsBoutique> {
 
     if (confirme != true) return;
 
-    final succes = await _service.supprimerProduit(produit.id);
+    try {
+      await _service.supprimerProduit(produit.id);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (succes) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('✅ Produit supprimé'),
@@ -281,10 +286,12 @@ class _TabProduitsBoutiqueState extends State<TabProduitsBoutique> {
         ),
       );
       _chargerProduits();
-    } else {
+    } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('❌ Erreur lors de la suppression'),
+        SnackBar(
+          content: Text('❌ Erreur: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -321,37 +328,18 @@ class _CarteProduit extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              // IMAGE
+              // IMAGE (placeholder pour l'instant)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: SizedBox(
+                child: Container(
                   width: 80,
                   height: 80,
-                  child: produit.images.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: produit.images.first,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: theme.disabledColor.withValues(alpha: 0.1),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            color: theme.disabledColor.withValues(alpha: 0.1),
-                            child: Icon(
-                              Icons.image_not_supported,
-                              color: theme.disabledColor,
-                            ),
-                          ),
-                        )
-                      : Container(
-                          color: theme.disabledColor.withValues(alpha: 0.1),
-                          child: Icon(
-                            Icons.image,
-                            color: theme.disabledColor,
-                          ),
-                        ),
+                  color: theme.disabledColor.withValues(alpha: 0.1),
+                  child: Icon(
+                    Icons.shopping_bag,
+                    color: theme.primaryColor,
+                    size: 32,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -387,7 +375,7 @@ class _CarteProduit extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'Stock: ${produit.stock}',
+                          'Stock: ${produit.stockGlobal ?? 'N/A'}',
                           style: theme.textTheme.bodySmall,
                         ),
                       ],

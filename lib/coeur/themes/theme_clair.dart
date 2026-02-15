@@ -40,7 +40,7 @@ class ThemeClair {
         onSurface: textPrimary,
         surfaceContainerHighest: surfaceVariant,
 
-        error: Color(0xFFD32F2F),
+        error: Color.fromARGB(255, 105, 0, 0),
         onError: Colors.white,
       ),
 
@@ -221,8 +221,7 @@ class ThemeClair {
       // ❄️ CARDS GLACIALES - LE PLUS IMPORTANT !
       cardTheme: CardThemeData(
         elevation: 3, // ← Ombre moyenne
-        shadowColor:
-            const Color(0xFF64748B).withValues(alpha: 0.15), // ← Ombre glaciale
+        shadowColor: const Color(0xFF64748B).withValues(alpha: 0.15), // ← Ombre glaciale
         color: surface, // ← Blanc pur
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(

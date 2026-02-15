@@ -154,10 +154,8 @@ class _EcranListeBoutiquesState extends State<EcranListeBoutiques> {
   // 📤 PARTAGER UNE BOUTIQUE
   // ===============================================
   Future<void> _partagerBoutique(Boutique boutique) async {
-    final localisation =
-        '${boutique.ville}${boutique.quartier != null && boutique.quartier!.isNotEmpty ? ', ${boutique.quartier}' : ''}';
-    final mapsUrl =
-        'https://www.google.com/maps/search/?api=1&query=${boutique.latitude},${boutique.longitude}';
+    final localisation = '${boutique.ville}${boutique.quartier != null && boutique.quartier!.isNotEmpty ? ', ${boutique.quartier}' : ''}';
+    final mapsUrl = 'https://www.google.com/maps/search/?api=1&query=${boutique.latitude},${boutique.longitude}';
 
     final message = StringBuffer()
       ..writeln('🛍️ Découvrez ma boutique sur SAME Shop !')
@@ -336,41 +334,55 @@ class _EcranListeBoutiquesState extends State<EcranListeBoutiques> {
       // ===============================================
       // 📄 BODY
       // ===============================================
-      body: FutureBuilder<List<Boutique>>(
-        future: _service.listerBoutiques(),
-        builder: (context, snapshot) {
-          // ⏳ Chargement
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+      body: Column(
+        children: [
+          /// -- Mode d'emploie
+          _buildCadreCristal(),
 
-          // ❌ Erreur
-          if (snapshot.hasError) {
-            return _buildErrorState(snapshot.error.toString());
-          }
+          /// -- ESPACEMENT 5px UNIQUEMENT
+          //const SizedBox(height: 5),
 
-          // 📋 Liste des boutiques
-          final boutiques = snapshot.data ?? [];
+          /// --Debut boutiques
+          Expanded(
+            child: FutureBuilder<List<Boutique>>(
+              future: _service.listerBoutiques(),
+              builder: (context, snapshot) {
+                // ⏳ Chargement
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
 
-          if (boutiques.isEmpty) {
-            return _buildEmptyState();
-          }
+                // ❌ Erreur
+                if (snapshot.hasError) {
+                  return _buildErrorState(snapshot.error.toString());
+                }
 
-          return RefreshIndicator(
-            onRefresh: _rafraichir,
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: boutiques.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final boutique = boutiques[index];
-                return _buildBoutiqueCard(boutique, colorScheme);
+                // 📋 Liste des boutiques
+                final boutiques = snapshot.data ?? [];
+
+                if (boutiques.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                return RefreshIndicator(
+                  onRefresh: _rafraichir,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 2, 16, 16),
+                    itemCount: boutiques.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final boutique = boutiques[index];
+                      return _buildBoutiqueCard(boutique, colorScheme);
+                    },
+                  ),
+                );
               },
             ),
-          );
-        },
+          ),
+          //Fin Expanded
+        ],
       ),
 
       // ===============================================
@@ -706,6 +718,95 @@ class _EcranListeBoutiquesState extends State<EcranListeBoutiques> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  ///=================================================================================
+  ///=================================================================================
+  // ===============================================
+// 🆕 CADRE CRISTAL - GUIDE UTILISATEUR
+// ===============================================
+  Widget _buildCadreCristal() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 3, 16, 0),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        // Effet cristal / verre dépoli
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            colorScheme.surface.withValues(alpha: 0.9),
+            colorScheme.surface.withValues(alpha: 0.7),
+          ],
+        ),
+        border: Border.all(
+          color: colorScheme.primary.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.primary.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 2),
+          ),
+          BoxShadow(
+            color: colorScheme.primary.withValues(alpha: 0.05),
+            blurRadius: 40,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Icône + Titre
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [colorScheme.primary, colorScheme.primary.withValues(alpha: 0.8)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.touch_app,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '💡 Comment utiliser vos boutiques',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      '• Cliquez sur une boutique pour l\'ouvrir\n'
+                      '• Appui long ou cliquez sur ⋮ pour afficher le menu\n',
+                      style: TextStyle(
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

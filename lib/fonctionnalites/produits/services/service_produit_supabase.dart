@@ -64,6 +64,53 @@ class ServiceProduitSupabase {
   }
 
   // ===============================================
+// 📄 PAGINATION PRODUITS - INFINITE SCROLL
+// ===============================================
+  // ===============================================
+// 📄 PAGINATION PRODUITS - INFINITE SCROLL
+// ===============================================
+  // ===============================================
+// 📄 PAGINATION PRODUITS - INFINITE SCROLL
+// ===============================================
+  Future<List<Produit>> listerProduitsPage({
+    required int page, // Page 0, 1, 2...
+    required int pageSize, // 20 produits par page
+  }) async {
+    try {
+      final offset = page * pageSize; // 0, 20, 40...
+
+      // ✅ EXACTEMENT comme recupererProduit() + pagination
+      final data = await _client
+          .from('produits')
+          .select()
+          .eq('actif', true) // ✅ Filtre AVANT order
+          .order('ordre_top', ascending: false) // ✅ Tri
+          .order('nombre_vues', ascending: false)
+          .order('created_at', ascending: false)
+          .range(offset, offset + pageSize - 1); // ✅ Pagination
+
+      return (data as List).map((e) => Produit.fromMap(e)).toList();
+    } catch (e) {
+      throw _gererErreur(e, 'Erreur pagination produits');
+    }
+  }
+
+  Future<List<Produit>> listerAllProduitsPage({
+    required int page,
+    required int pageSize,
+  }) async {
+    try {
+      final offset = page * pageSize;
+
+      final data = await _client.from('produits').select().order('created_at', ascending: false).range(offset, offset + pageSize - 1);
+
+      return (data as List).map((e) => Produit.fromMap(e)).toList();
+    } catch (e) {
+      throw _gererErreur(e, 'Pagination produits');
+    }
+  }
+
+  // ===============================================
   // ➕ CRÉER UN PRODUIT
   // ===============================================
   Future<String> creerProduit({
@@ -406,10 +453,116 @@ class ServiceProduitSupabase {
     }
   }
 
+// ===============================================
+// 🔍 FILTRES CLIENT-SIDE - 100% FONCTIONNEL
+// ===============================================
+  Future<List<Produit>> listerProduitsFiltres({
+    String? recherche,
+    String? categorie,
+    String? taille,
+    String? couleur,
+    double? prixMin,
+    double? prixMax,
+    String? tri = 'popularite',
+    int page = 0,
+    int pageSize = 20,
+  }) async {
+    try {
+      // 1. Charger produits (méthode existante)
+      final produits = await listerProduitsPage(page: page, pageSize: pageSize * 2);
+
+      // 2. Filtres simples (nom/prix)
+      List<Produit> result = [];
+
+      for (final produit in produits) {
+        // 🔍 Recherche
+        if (recherche != null && recherche.isNotEmpty) {
+          if (!produit.nom.toLowerCase().contains(recherche.toLowerCase())) {
+            continue;
+          }
+        }
+
+        // 💰 Prix (✅ SANS LIMITE ARBITRAIRE)
+        if (prixMin != null && prixMin > 0 && produit.prix < prixMin) {
+          continue;
+        }
+        if (prixMax != null && prixMax > 0 && produit.prix > prixMax) {
+          continue;
+        }
+
+        result.add(produit);
+      }
+
+      // 3. FILTRES TAILLES/COULEURS (✅ SANS SETTERS)
+      if (taille != null || couleur != null) {
+        final List<Produit> filtresAvances = [];
+
+        for (final produit in result) {
+          bool correspond = true;
+
+          // 📏 Taille
+          if (taille != null && taille.isNotEmpty) {
+            final tailles = await listerTailles(produit.id);
+            if (!tailles.any((t) => t.valeur.toLowerCase() == taille.toLowerCase())) {
+              correspond = false;
+            }
+          }
+
+          // 🎨 Couleur
+          if (couleur != null && couleur.isNotEmpty && correspond) {
+            final couleurs = await listerCouleurs(produit.id);
+            if (!couleurs.any((c) => c.nom.toLowerCase() == couleur.toLowerCase())) {
+              correspond = false;
+            }
+          }
+
+          if (correspond) {
+            filtresAvances.add(produit);
+          }
+        }
+
+        result = filtresAvances;
+      }
+
+      // 4. Tri final
+      switch (tri) {
+        case 'prix_croissant':
+          result.sort((a, b) => a.prix.compareTo(b.prix));
+          break;
+        case 'prix_decroissant':
+          result.sort((a, b) => b.prix.compareTo(a.prix));
+          break;
+        case 'popularite':
+          result.sort((a, b) => b.nombreVues.compareTo(a.nombreVues));
+          break;
+        case 'recent':
+          result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          break;
+      }
+
+      return result.take(pageSize).toList();
+    } catch (e) {
+      throw _gererErreur(e, 'Erreur filtres produits');
+    }
+  }
+
   // ===============================================
   // 🧹 NETTOYAGE
   // ===============================================
   void dispose() {
     // Cleanup si nécessaire
   }
+}
+
+// ===============================================
+// 💰 LIMITES ADAPTÉES TOGO 2026
+// ===============================================
+class LimitesPrix {
+  static const double maxMicro = 100000;
+  static const double maxStandard = 5000000;
+  static const double maxPro = 50000000;
+  static const double maxIllimite = 999999999;
+
+  static double limiter(double prix) => prix.clamp(0, maxPro);
+  static bool estValide(double prix) => prix >= 0 && prix <= maxPro;
 }

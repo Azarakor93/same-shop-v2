@@ -112,9 +112,9 @@ final Map<String, String> fr = {
   //Espace vendeur
   ///==========================================================================
   'create_shop': 'Créer ma boutique',
+  'nouvelle_annonce': 'Nouvelle annonce',
   'shop_title': 'Lance ta boutique sur SAME SHOP',
-  'shop_subtitle':
-      'Crée ta boutique gratuitement et commence à vendre dès aujourd’hui.',
+  'shop_subtitle': 'Crée ta boutique gratuitement et commence à vendre dès aujourd’hui.',
   'shop_name': 'Nom de la boutique',
   'shop_description': 'Description',
   'shop_phone': 'Téléphone',

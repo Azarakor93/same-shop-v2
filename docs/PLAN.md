@@ -39,9 +39,13 @@ Outils : Docker Desktop (WSL2) et la CLI Supabase (Scoop ou `npx supabase`).
   - [ ] aligner `favoris` et les enchères sur le code (garder le schéma de `encheres.sql`, le plus proche du modèle Dart)
   - [ ] ajouter les RPC manquantes et celles de `workflows_metier.sql`
   - [ ] créer les buckets Storage `produits` et `boutiques`
+  - [ ] boutiques multiples : `vendeurs.id` sert à la fois de clé primaire et d'identifiant du compte, donc une seule boutique par compte. Pourtant l'app propose « Nouvelle boutique » et un abonnement pour en ouvrir d'autres. **Décision à prendre** :
+    - garder le multi-boutique : migration avec un `id` généré et une colonne `user_id` propriétaire, puis adapter les requêtes `eq('id', _userId)` et la RLS ;
+    - ou s'en tenir à une boutique par compte : retirer ce bouton et ce parcours d'abonnement.
 - [ ] Activer la RLS sur **toutes** les tables : la clé anon est publique, c'est la RLS qui protège les données
 - [ ] `supabase/seed.sql` : catégories, 3 comptes (client, vendeur, livreur), boutiques, produits, une enchère. `supabase db reset` recrée tout.
 - [ ] Auth locale : les emails OTP arrivent dans la boîte locale (http://localhost:54324) ; pour les SMS, numéros de test à code fixe via `[auth.sms.test_otp]` dans `supabase/config.toml`
+- [ ] Code de confirmation par email : le modèle « Confirm signup » doit contenir `{{ .Token }}` (en local comme sur le cloud). Si la confirmation est désactivée (réglage par défaut en local), `signUp` ouvre directement une session et l'écran OTP doit être sauté.
 - [ ] Créer `config/local.json` : `http://10.0.2.2:54321` depuis l'émulateur Android, l'IP du PC depuis un vrai téléphone
 
 ## Phase 2 : stabiliser l'existant (2 à 3 j)
@@ -53,6 +57,8 @@ Outils : Docker Desktop (WSL2) et la CLI Supabase (Scoop ou `npx supabase`).
   - [ ] appliquer vraiment les filtres (`ecran_principal.dart`)
   - [ ] charger les catégories des filtres depuis Supabase
   - [ ] actions du dashboard vendeur
+- [x] Inscription par téléphone, vérification réelle de l'OTP email, retour à l'accueil après confirmation (relevés par la revue Codex)
+- [ ] Écran OTP email : ajouter un bouton « Renvoyer le code » (`renvoyerOtpEmail` existe déjà) et retirer le blocage à 60 s côté app. C'est Supabase qui gère l'expiration.
 - [ ] Supprimer les fichiers vides ou morts : `ecran_livreur`, `ecran_vendeur`, `ecran_choix_abonnement`, `ecran_super_admin`, `service_partage`, `ecran_favoris`
 - [ ] Tester chaque écran sur la base seedée ; chaque erreur Postgrest signale un écart de schéma à corriger
 

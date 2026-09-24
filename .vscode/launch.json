@@ -5,21 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "same_shop",
+            "name": "same_shop (Supabase cloud)",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "toolArgs": ["--dart-define-from-file=config/cloud.json"]
+        },
+        {
+            "name": "same_shop (Supabase local)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": ["--dart-define-from-file=config/local.json"]
         },
         {
             "name": "same_shop (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "toolArgs": ["--dart-define-from-file=config/cloud.json"]
         },
         {
             "name": "same_shop (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "toolArgs": ["--dart-define-from-file=config/cloud.json"]
         }
     ]
 }

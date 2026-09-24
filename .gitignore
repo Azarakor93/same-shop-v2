@@ -48,3 +48,7 @@ Thumbs.db
 
 # Worktrees locaux des sessions Claude Code
 .claude/worktrees/
+
+# Config Supabase de chaque poste (modèle : config/example.json)
+config/*.json
+!config/example.json

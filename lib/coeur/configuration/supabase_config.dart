@@ -1,5 +1,21 @@
+// ===============================================
+// 🔐 CONFIGURATION SUPABASE
+// ===============================================
+// Valeurs injectées au lancement, jamais écrites dans le code :
+//   flutter run --dart-define-from-file=config/cloud.json
+// Modèle du fichier : config/example.json
+
 class SupabaseConfig {
-  static const url = 'https://bvgbdynizzvqcvjnsbxr.supabase.co';
-  static const anonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2JkeW5penp2cWN2am5zYnhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MTE2MTAsImV4cCI6MjA4NTQ4NzYxMH0.HFfozq_dEvL3Bfsr82a2QVwCdiX18ZyTYwhgBf71Z8M';
+  static const url = String.fromEnvironment('SUPABASE_URL');
+  static const anonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
+  /// Stoppe le démarrage avec un message clair si la config est absente.
+  static void verifier() {
+    if (url.isEmpty || anonKey.isEmpty) {
+      throw StateError(
+        'Configuration Supabase manquante : lance l\'app avec '
+        '--dart-define-from-file=config/cloud.json (modèle : config/example.json).',
+      );
+    }
+  }
 }

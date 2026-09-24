@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:same_shop/coeur/services/snack_service.dart';
 import '../../../fonctionnalites/authentification/views/ecran_inscription.dart';
-import '../../../Partage/widgets/header_connexion.dart';
+import '../../../partage/widgets/header_connexion.dart';
 import '../../../coeur/languages/gestion_langage.dart';
 import '../../../coeur/constant/pays.dart';
 import '../../../coeur/services/supabase_auth_service.dart';

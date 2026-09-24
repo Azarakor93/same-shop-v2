@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import '../../../Partage/widgets/header_connexion.dart';
+import '../../../partage/widgets/header_connexion.dart';
 import '../../../coeur/languages/gestion_langage.dart';
 import '../../../coeur/services/snack_service.dart';
 import '../../../coeur/services/supabase_auth_service.dart';

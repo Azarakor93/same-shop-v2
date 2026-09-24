@@ -30,6 +30,7 @@ class _EcranOtpEmailState extends State<EcranOtpEmail> {
 
   bool afficherErreur = false;
   bool otpExpire = false;
+  bool _verificationEnCours = false;
 
   @override
   void initState() {
@@ -69,32 +70,38 @@ class _EcranOtpEmailState extends State<EcranOtpEmail> {
   // ==========================
 
   Future<void> _confirmerOtp() async {
+    // Saisie du 6e chiffre + clic sur « Confirmer » : une seule vérification.
+    // Une fois le code accepté, le verrou reste en place.
+    if (_verificationEnCours) return;
+
     if (!_otpComplet || otpExpire) {
       setState(() => afficherErreur = true);
       return;
     }
 
-    // ✅ BYPASS DEV
-    if (_codeOtp != '939393') {
+    _verificationEnCours = true;
+    try {
+      // 🔐 Vérification du code par Supabase (ouvre la session)
+      await authService.confirmerOtpEmail(
+        email: widget.email,
+        token: _codeOtp,
+      );
+    } catch (_) {
+      _verificationEnCours = false;
+      if (!mounted) return;
       SnackService.afficher(context,
           message: Langage.t(context, 'otp_invalid'), erreur: true);
       return;
     }
 
-    // 🔜 PROD : confirmation réelle Supabase
-    // await authService.confirmerOtpEmail(
-    //   email: widget.email,
-    //   token: _codeOtp,
-    // );
+    if (!mounted) return;
 
     SnackService.afficher(context,
         message: Langage.t(context, 'account_confirmed'));
 
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      '/accueil',
-      (_) => false,
-    );
+    // AuthRouter, premier écran de la pile, affiche l'accueil dès que la
+    // session existe
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   // void _afficherSnack(String message, {bool erreur = false}) {

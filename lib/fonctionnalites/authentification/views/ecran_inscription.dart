@@ -4,6 +4,8 @@ import '../../../partage/widgets/header_connexion.dart';
 import '../../../coeur/languages/gestion_langage.dart';
 import '../../../coeur/services/snack_service.dart';
 import '../../../coeur/services/supabase_auth_service.dart';
+import '../../../coeur/services/supabase_phone_auth_service.dart';
+import 'ecran_otp.dart';
 import 'ecran_otp_email.dart';
 
 enum TypeInscription { email, telephone }
@@ -22,6 +24,7 @@ class _EcranInscriptionState extends State<EcranInscription> {
 
   final _formKey = GlobalKey<FormState>();
   final SupabaseAuthService _authService = SupabaseAuthService();
+  final SupabasePhoneAuthService _phoneService = SupabasePhoneAuthService();
 
   TypeInscription typeInscription = TypeInscription.email;
 
@@ -62,6 +65,20 @@ class _EcranInscriptionState extends State<EcranInscription> {
     setState(() => chargement = true);
 
     try {
+      if (typeInscription == TypeInscription.telephone) {
+        // 📲 Par SMS : le compte est créé quand le code est vérifié
+        final phone = _numeroInternational(telephoneController.text)!;
+        await _phoneService.envoyerCode(phone);
+
+        if (!mounted) return;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => EcranOtp(phone: phone)),
+        );
+        return;
+      }
+
       await _authService.inscrire(
         email: emailController.text.trim(),
         motDePasse: motDePasseController.text,
@@ -81,7 +98,9 @@ class _EcranInscriptionState extends State<EcranInscription> {
       debugPrint('ERREUR SUPABASE BRUTE: $e');
       SnackService.afficher(
         context,
-        message: _messageErreur(e),
+        message: typeInscription == TypeInscription.telephone
+            ? Langage.t(context, 'otp_send_error')
+            : _messageErreur(e),
         erreur: true,
       );
     } finally {
@@ -303,11 +322,35 @@ class _EcranInscriptionState extends State<EcranInscription> {
   Widget _formulaireTelephone() {
     return TextFormField(
       controller: telephoneController,
-      decoration:
-          InputDecoration(labelText: Langage.t(context, 'phone_number')),
-      validator: (v) =>
-          v == null || v.isEmpty ? Langage.t(context, 'phone_required') : null,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        labelText: Langage.t(context, 'phone_number'),
+        hintText: '+228 90 00 00 00',
+      ),
+      validator: (v) {
+        if (v == null || v.trim().isEmpty) {
+          return Langage.t(context, 'phone_required');
+        }
+        if (_numeroInternational(v) == null) {
+          return Langage.t(context, 'phone_invalid');
+        }
+        return null;
+      },
     );
+  }
+
+  // 📞 Format international exigé par Supabase.
+  // Sans indicatif, on suppose le Togo (+228), comme l'écran de connexion.
+  String? _numeroInternational(String saisie) {
+    final texte = saisie.trim();
+    final chiffres = texte.replaceAll(RegExp(r'\D'), '');
+
+    if (texte.startsWith('+')) {
+      return chiffres.length >= 8 && chiffres.length <= 15
+          ? '+$chiffres'
+          : null;
+    }
+    return chiffres.length == 8 ? '+228$chiffres' : null;
   }
 
   Widget _boutonPrincipal() {

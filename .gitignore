@@ -41,3 +41,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Windows
+desktop.ini
+Thumbs.db
+
+# Worktrees locaux des sessions Claude Code
+.claude/worktrees/
